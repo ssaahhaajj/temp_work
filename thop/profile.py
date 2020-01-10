@@ -115,7 +115,7 @@ def profile(model, inputs, custom_ops=None, verbose=True):
         if hasattr(m, "embedding_dim"):
             print(" embedding_dim ", m.embedding_dim)
         if hasattr(m, "normalized_shape"):
-            print(" normalized_shape ", m.normalized_shape)
+            print(" normalized_shape ", m.normalized_shape[0])
         print(" FLOP ",m.total_ops.item(),"\n")
         total_ops += m.total_ops
         total_params += m.total_params
