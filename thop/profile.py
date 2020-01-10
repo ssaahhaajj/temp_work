@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from torch.nn.modules.conv import _ConvNd
 import warnings
+from pandas import DataFrame
 
 from distutils.version import LooseVersion
 
@@ -98,50 +99,47 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
     total_params = 0
     
     if want_op_file==True:
-        with open("output_data.csv","w") as op_file:
-            op_file.write("Layer_name")
-            op_file.write("Input Features")
-            op_file.write("Output Features")
-            op_file.write("size of dict of Emb ")
-            op_file.write("Emb vector size")
-            op_file.write("Normalization")
-            op_file.write("FLOP count")
-            op_file.write("\n")
-            for m in model.modules():
-                if len(list(m.children())) > 0:  # skip for non-leaf module
-                    continue
-                strr=str(m)
-                layer_name=''
-                for ch in strr:
-                    if ch=='(':
-                        break
-                    layer_name=layer_name+ch
-                op_file.write(layer_name)
-                if hasattr(m, "in_features"):
-                    op_file.write(str(m.in_features))
-                else:
-                    op_file.write("-")
-                if hasattr(m, "out_features"):
-                    op_file.write(str(m.out_features))
-                else:
-                    op_file.write("-")
-                if hasattr(m, "num_embeddings"):
-                    op_file.write( str(m.num_embeddings))
-                else:
-                    op_file.write("-")
-                if hasattr(m, "embedding_dim"):
-                    op_file.write( str(m.embedding_dim))
-                else:
-                    op_file.write("-")
-                if hasattr(m, "normalized_shape"):
-                    op_file.write(str(m.normalized_shape[0]))
-                else:
-                    op_file.write("-")
-
-                op_file.write(str(m.total_ops.item()))
-                op_file.write("\n")
-                total_ops += m.total_ops
-                total_params += m.total_params
+        mynn={'Layer Name':[],'Input Features':[], 'Output Features':[], 'Dict Size of Emb':[], 'Emb Vector Size':[], 'Norm Size':[], 'FLOPs':[]}
+        for m in model.modules():
+            if len(list(m.children())) > 0:  # skip for non-leaf module
+                continue
+            strr=str(m)
+            layer_name=''
+            for ch in strr:
+                if ch=='(':
+                    break
+                layer_name=layer_name+ch
+            mynn["Layer name"].append(layer_name)
+            
+            if hasattr(m, "in_features"):
+                mynn["Input Features"].append(str(m.in_features))
+            else:
+                mynn["Input Features"].append("-")
+                
+            if hasattr(m, "out_features"):
+                mynn["Output Features"].append(str(m.out_features))
+            else:
+                mynn["Output Features"].append("-")
+                
+            if hasattr(m, "num_embeddings"):
+                mynn["Dict Size of Emb"].append(str(m.num_embeddings))
+            else:
+                mynn["Dict Size of Emb"].append("-")
+                
+            if hasattr(m, "embedding_dim"):
+                mynn["Emb Vector Size"].append(str(m.embedding_dim))
+            else:
+                mynn["Emb Vector Size"].append("-")
+                
+            if hasattr(m, "normalized_shape"):
+                mynn["Norm Size"].append(str(m.normalized_shape[0]))
+            else:
+                mynn["Norm Size"].append("-")
+                
+            mynn["FLOPs"].append(str(m.total_ops.item()))
+            total_ops += m.total_ops
+            total_params += m.total_params
+        export_csv = df.to_csv (r'output_file.csv', index = None, header=True)
     else:
         for m in model.modules():
             if len(list(m.children())) > 0:  # skip for non-leaf module
