@@ -58,7 +58,7 @@ register_hooks = {
 }
 
 
-def profile(model, inputs, custom_ops=None, verbose=True):
+def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
     handler_collection = []
     if custom_ops is None:
         custom_ops = {}
@@ -96,29 +96,76 @@ def profile(model, inputs, custom_ops=None, verbose=True):
 
     total_ops = 0
     total_params = 0
-    for m in model.modules():
-        if len(list(m.children())) > 0:  # skip for non-leaf module
-            continue
-        strr=str(m)
-        layer_name=''
-        for ch in strr:
-            if ch=='(':
-                break
-            layer_name=layer_name+ch
-        print(layer_name)
-        if hasattr(m, "in_features"):
-            print(" in_features ", m.in_features)
-        if hasattr(m, "out_features"):
-            print(" out_features ", m.out_features)
-        if hasattr(m, "num_embeddings"):
-            print(" num_embeddings ", m.num_embeddings)
-        if hasattr(m, "embedding_dim"):
-            print(" embedding_dim ", m.embedding_dim)
-        if hasattr(m, "normalized_shape"):
-            print(" normalized_shape ", m.normalized_shape[0])
-        print(" FLOP ",m.total_ops.item(),"\n")
-        total_ops += m.total_ops
-        total_params += m.total_params
+    
+    if want_op_file==True:
+        with open("output_data.csv","w") as op_file:
+            op_file.write("Layer_name")
+            op_file.write("Input Features")
+            op_file.write("Output Features")
+            op_file.write("size of dict of Emb ")
+            op_file.write("Emb vector size")
+            op_file.write("Normalization")
+            op_file.write("FLOP count")
+            op_file.write("\n")
+            for m in model.modules():
+            if len(list(m.children())) > 0:  # skip for non-leaf module
+                continue
+            strr=str(m)
+            layer_name=''
+            for ch in strr:
+                if ch=='(':
+                    break
+                layer_name=layer_name+ch
+            op_file.write(layer_name)
+            if hasattr(m, "in_features"):
+                op_file.write(m.in_features)
+            else:
+                op_file.write("-")
+            if hasattr(m, "out_features"):
+                op_file.write(m.out_features)
+            else:
+                op_file.write("-")
+            if hasattr(m, "num_embeddings"):
+                op_file.write( m.num_embeddings)
+            else:
+                op_file.write("-")
+            if hasattr(m, "embedding_dim"):
+                op_file.write( m.embedding_dim)
+            else:
+                op_file.write("-")
+            if hasattr(m, "normalized_shape"):
+                op_file.write(m.normalized_shape[0])
+            else:
+                op_file.write("-")
+            
+            op_file.write(m.total_ops.item())
+            op_file.write("\n")
+            total_ops += m.total_ops
+            total_params += m.total_params
+    else:
+        for m in model.modules():
+            if len(list(m.children())) > 0:  # skip for non-leaf module
+                continue
+            strr=str(m)
+            layer_name=''
+            for ch in strr:
+                if ch=='(':
+                    break
+                layer_name=layer_name+ch
+            print(layer_name)
+            if hasattr(m, "in_features"):
+                print(" in_features ", m.in_features)
+            if hasattr(m, "out_features"):
+                print(" out_features ", m.out_features)
+            if hasattr(m, "num_embeddings"):
+                print(" num_embeddings ", m.num_embeddings)
+            if hasattr(m, "embedding_dim"):
+                print(" embedding_dim ", m.embedding_dim)
+            if hasattr(m, "normalized_shape"):
+                print(" normalized_shape ", m.normalized_shape[0])
+            print(" FLOP ",m.total_ops.item(),"\n")
+            total_ops += m.total_ops
+            total_params += m.total_params
 
     total_ops = total_ops.item()
     total_params = total_params.item()
@@ -136,5 +183,7 @@ def profile(model, inputs, custom_ops=None, verbose=True):
             m._buffers.pop("total_ops")
         if "total_params" in m._buffers:
             m._buffers.pop("total_params")
-
+#     if want_op_file == True:
+#         return total_ops, total_params, op_file
+#     else:
     return total_ops, total_params
