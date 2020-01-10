@@ -100,10 +100,12 @@ def profile(model, inputs, custom_ops=None, verbose=True):
         if len(list(m.children())) > 0:  # skip for non-leaf module
             continue
         strr=str(m)
+        layer_name
         for ch in strr:
             if ch=='(':
                 break
-            print(ch)
+            layer_name=layer_name+ch
+        print(layer_name)
         if hasattr(m, "in_features"):
             print(" in_features ", m.in_features)
         if hasattr(m, "out_features"):
