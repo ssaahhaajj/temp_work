@@ -104,6 +104,11 @@ def profile(model, inputs, custom_ops=None, verbose=True):
             print(" in_features ", m.in_features)
         if hasattr(m, "out_features"):
             print(" out_features ", m.out_features)
+        if hasattr(m, "num_embeddings"):
+            print(" num_embeddings ", m.num_embeddings)
+        if hasattr(m, "embedding_dim"):
+            print(" embedding_dim ", m.embedding_dim)
+        print(" FLOP Count--",m.total_ops,"\n")
         total_ops += m.total_ops
         total_params += m.total_params
 
