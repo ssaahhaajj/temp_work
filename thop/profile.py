@@ -83,13 +83,6 @@ def profile(model, inputs, custom_ops=None, verbose=True):
             fn = custom_ops[m_type]
         elif m_type in register_hooks:
             fn = register_hooks[m_type]
-
-        if fn is None:
-            if verbose:
-                logger.info("THOP has not implemented counting method for ", m)
-        else:
-            if verbose:
-                logger.info("Register FLOP counter for module %s" % str(m))
             handler = m.register_forward_hook(fn)
             handler_collection.append(handler)
 
