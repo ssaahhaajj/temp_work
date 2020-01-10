@@ -97,74 +97,51 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
 
     total_ops = 0
     total_params = 0
-    
+
+    mynn={'Layer Name':[],'Input Features':[], 'Output Features':[], 'Dict Size of Emb':[], 'Emb Vector Size':[], 'Norm Size':[], 'FLOPs':[]}
+    for m in model.modules():
+        if len(list(m.children())) > 0:  # skip for non-leaf module
+            continue
+        strr=str(m)
+        layer_name=''
+        for ch in strr:
+            if ch=='(':
+                break
+            layer_name=layer_name+ch
+        mynn["Layer name"].append(layer_name)
+
+        if hasattr(m, "in_features"):
+            mynn["Input Features"].append(str(m.in_features))
+        else:
+            mynn["Input Features"].append("-")
+
+        if hasattr(m, "out_features"):
+            mynn["Output Features"].append(str(m.out_features))
+        else:
+            mynn["Output Features"].append("-")
+
+        if hasattr(m, "num_embeddings"):
+            mynn["Dict Size of Emb"].append(str(m.num_embeddings))
+        else:
+            mynn["Dict Size of Emb"].append("-")
+
+        if hasattr(m, "embedding_dim"):
+            mynn["Emb Vector Size"].append(str(m.embedding_dim))
+        else:
+            mynn["Emb Vector Size"].append("-")
+
+        if hasattr(m, "normalized_shape"):
+            mynn["Norm Size"].append(str(m.normalized_shape[0]))
+        else:
+            mynn["Norm Size"].append("-")
+
+        mynn["FLOPs"].append(str(m.total_ops.item()))
+        total_ops += m.total_ops
+        total_params += m.total_params
     if want_op_file==True:
-        mynn={'Layer Name':[],'Input Features':[], 'Output Features':[], 'Dict Size of Emb':[], 'Emb Vector Size':[], 'Norm Size':[], 'FLOPs':[]}
-        for m in model.modules():
-            if len(list(m.children())) > 0:  # skip for non-leaf module
-                continue
-            strr=str(m)
-            layer_name=''
-            for ch in strr:
-                if ch=='(':
-                    break
-                layer_name=layer_name+ch
-            mynn["Layer name"].append(layer_name)
-            
-            if hasattr(m, "in_features"):
-                mynn["Input Features"].append(str(m.in_features))
-            else:
-                mynn["Input Features"].append("-")
-                
-            if hasattr(m, "out_features"):
-                mynn["Output Features"].append(str(m.out_features))
-            else:
-                mynn["Output Features"].append("-")
-                
-            if hasattr(m, "num_embeddings"):
-                mynn["Dict Size of Emb"].append(str(m.num_embeddings))
-            else:
-                mynn["Dict Size of Emb"].append("-")
-                
-            if hasattr(m, "embedding_dim"):
-                mynn["Emb Vector Size"].append(str(m.embedding_dim))
-            else:
-                mynn["Emb Vector Size"].append("-")
-                
-            if hasattr(m, "normalized_shape"):
-                mynn["Norm Size"].append(str(m.normalized_shape[0]))
-            else:
-                mynn["Norm Size"].append("-")
-                
-            mynn["FLOPs"].append(str(m.total_ops.item()))
-            total_ops += m.total_ops
-            total_params += m.total_params
         export_csv = df.to_csv (r'output_file.csv', index = None, header=True)
     else:
-        for m in model.modules():
-            if len(list(m.children())) > 0:  # skip for non-leaf module
-                continue
-            strr=str(m)
-            layer_name=''
-            for ch in strr:
-                if ch=='(':
-                    break
-                layer_name=layer_name+ch
-            print(layer_name)
-            if hasattr(m, "in_features"):
-                print(" in_features ", m.in_features)
-            if hasattr(m, "out_features"):
-                print(" out_features ", m.out_features)
-            if hasattr(m, "num_embeddings"):
-                print(" num_embeddings ", m.num_embeddings)
-            if hasattr(m, "embedding_dim"):
-                print(" embedding_dim ", m.embedding_dim)
-            if hasattr(m, "normalized_shape"):
-                print(" normalized_shape ", m.normalized_shape[0])
-            print(" FLOP ",m.total_ops.item(),"\n")
-            total_ops += m.total_ops
-            total_params += m.total_params
-
+        print(df)
     total_ops = total_ops.item()
     total_params = total_params.item()
 
