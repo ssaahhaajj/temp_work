@@ -99,7 +99,7 @@ def profile(model, inputs, custom_ops=None, verbose=True):
     for m in model.modules():
         if len(list(m.children())) > 0:  # skip for non-leaf module
             continue
-        print(type(m))
+        print(m)
         if hasattr(m, "in_features"):
             print(" in_features ", m.in_features)
         if hasattr(m, "out_features"):
