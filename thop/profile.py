@@ -114,7 +114,7 @@ def profile(model, inputs, custom_ops=None, verbose=True):
             print(" num_embeddings ", m.num_embeddings)
         if hasattr(m, "embedding_dim"):
             print(" embedding_dim ", m.embedding_dim)
-        print(" FLOP Count--",m.total_ops,"\n")
+        print(" FLOP ",m.total_ops.item(),"\n")
         total_ops += m.total_ops
         total_params += m.total_params
 
