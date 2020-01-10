@@ -108,40 +108,40 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
             op_file.write("FLOP count")
             op_file.write("\n")
             for m in model.modules():
-            if len(list(m.children())) > 0:  # skip for non-leaf module
-                continue
-            strr=str(m)
-            layer_name=''
-            for ch in strr:
-                if ch=='(':
-                    break
-                layer_name=layer_name+ch
-            op_file.write(layer_name)
-            if hasattr(m, "in_features"):
-                op_file.write(m.in_features)
-            else:
-                op_file.write("-")
-            if hasattr(m, "out_features"):
-                op_file.write(m.out_features)
-            else:
-                op_file.write("-")
-            if hasattr(m, "num_embeddings"):
-                op_file.write( m.num_embeddings)
-            else:
-                op_file.write("-")
-            if hasattr(m, "embedding_dim"):
-                op_file.write( m.embedding_dim)
-            else:
-                op_file.write("-")
-            if hasattr(m, "normalized_shape"):
-                op_file.write(m.normalized_shape[0])
-            else:
-                op_file.write("-")
-            
-            op_file.write(m.total_ops.item())
-            op_file.write("\n")
-            total_ops += m.total_ops
-            total_params += m.total_params
+                if len(list(m.children())) > 0:  # skip for non-leaf module
+                    continue
+                strr=str(m)
+                layer_name=''
+                for ch in strr:
+                    if ch=='(':
+                        break
+                    layer_name=layer_name+ch
+                op_file.write(layer_name)
+                if hasattr(m, "in_features"):
+                    op_file.write(m.in_features)
+                else:
+                    op_file.write("-")
+                if hasattr(m, "out_features"):
+                    op_file.write(m.out_features)
+                else:
+                    op_file.write("-")
+                if hasattr(m, "num_embeddings"):
+                    op_file.write( m.num_embeddings)
+                else:
+                    op_file.write("-")
+                if hasattr(m, "embedding_dim"):
+                    op_file.write( m.embedding_dim)
+                else:
+                    op_file.write("-")
+                if hasattr(m, "normalized_shape"):
+                    op_file.write(m.normalized_shape[0])
+                else:
+                    op_file.write("-")
+
+                op_file.write(m.total_ops.item())
+                op_file.write("\n")
+                total_ops += m.total_ops
+                total_params += m.total_params
     else:
         for m in model.modules():
             if len(list(m.children())) > 0:  # skip for non-leaf module
