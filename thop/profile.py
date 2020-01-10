@@ -98,7 +98,7 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
     total_ops = 0
     total_params = 0
 
-    mynn={'Layer Name':[],'Input Features':[], 'Output Features':[], 'Dict Size of Emb':[], 'Emb Vector Size':[], 'Norm Size':[], 'FLOPs':[]}
+    mynn={"Layer Name":[],"Input Features":[], "Output Features":[], "Dict Size of Emb":[], "Emb Vector Size":[], "Norm Size":[], "FLOPs":[]}
     for m in model.modules():
         if len(list(m.children())) > 0:  # skip for non-leaf module
             continue
@@ -108,7 +108,7 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
             if ch=='(':
                 break
             layer_name=layer_name+ch
-        mynn["Layer name"].append(layer_name)
+        mynn["Layer Name"].append(layer_name)
 
         if hasattr(m, "in_features"):
             mynn["Input Features"].append(str(m.in_features))
@@ -138,6 +138,9 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
         mynn["FLOPs"].append(str(m.total_ops.item()))
         total_ops += m.total_ops
         total_params += m.total_params
+        
+    df = DataFrame(mynn, columns= ["Layer Name","Input Features","Output Features","Dict Size of Emb","Emb Vector Size","Norm Size","FLOPs"])
+    
     if want_op_file==True:
         export_csv = df.to_csv (r'output_file.csv', index = None, header=True)
     else:
