@@ -118,27 +118,27 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
                     layer_name=layer_name+ch
                 op_file.write(layer_name)
                 if hasattr(m, "in_features"):
-                    op_file.write(m.in_features)
+                    op_file.write(str(m.in_features))
                 else:
                     op_file.write("-")
                 if hasattr(m, "out_features"):
-                    op_file.write(m.out_features)
+                    op_file.write(str(m.out_features))
                 else:
                     op_file.write("-")
                 if hasattr(m, "num_embeddings"):
-                    op_file.write( m.num_embeddings)
+                    op_file.write( str(m.num_embeddings))
                 else:
                     op_file.write("-")
                 if hasattr(m, "embedding_dim"):
-                    op_file.write( m.embedding_dim)
+                    op_file.write( str(m.embedding_dim))
                 else:
                     op_file.write("-")
                 if hasattr(m, "normalized_shape"):
-                    op_file.write(m.normalized_shape[0])
+                    op_file.write(str(m.normalized_shape[0]))
                 else:
                     op_file.write("-")
 
-                op_file.write(m.total_ops.item())
+                op_file.write(str(m.total_ops.item()))
                 op_file.write("\n")
                 total_ops += m.total_ops
                 total_params += m.total_params
