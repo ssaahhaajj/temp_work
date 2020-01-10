@@ -19,7 +19,7 @@ def zero_ops(m, x, y):
 def emb_ops(m, x, y):
     temp=m.num_embeddings
     temp2=m.embedding_dim
-    m.total_ops += torch.Tensor([temp1*temp])
+    m.total_ops += torch.Tensor([temp2*temp])
     print("embedding ", m.total_ops)
 
 def count_convNd(m: _ConvNd, x: (torch.Tensor,), y: torch.Tensor):
