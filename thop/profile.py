@@ -30,7 +30,7 @@ register_hooks = {
     nn.BatchNorm2d: count_bn,
     nn.BatchNorm3d: count_bn,
 
-    nn.Embedding: zero_ops,
+    nn.Embedding: emb_ops,
     nn.ReLU: zero_ops,
     nn.ReLU6: zero_ops,
     nn.LeakyReLU: count_relu,
